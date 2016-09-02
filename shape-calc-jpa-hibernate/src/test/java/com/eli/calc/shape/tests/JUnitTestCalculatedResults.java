@@ -24,20 +24,21 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.eli.calc.shape.config.AppContext;
 import com.eli.calc.shape.domain.CalculationRequest;
+import com.eli.calc.shape.domain.CalculationResult;
 import com.eli.calc.shape.model.CalcType;
 import com.eli.calc.shape.model.ShapeName;
-import com.eli.calc.shape.service.PendingRequests;
+import com.eli.calc.shape.service.CalculatedResults;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes={AppContext.class})
-public class JUnitTestPendingRequests  implements ApplicationContextAware {
+public class JUnitTestCalculatedResults  implements ApplicationContextAware {
 
-	private static final Logger logger = LoggerFactory.getLogger(JUnitTestPendingRequests.class);
+	private static final Logger logger = LoggerFactory.getLogger(JUnitTestCalculatedResults.class);
 
 	private ApplicationContext ctx;
 
 	@Autowired
-	private PendingRequests pendingRequests;
+	private CalculatedResults calculatedResults;
 	
 	@Override
 	public void setApplicationContext(ApplicationContext ctx) {
@@ -49,7 +50,7 @@ public class JUnitTestPendingRequests  implements ApplicationContextAware {
 	@Before // each test
 	public void setUp() throws Exception {
 
-		pendingRequests.deleteAllRequests();
+		calculatedResults.deleteAllResults();
 	}
 
 	@After // each test
@@ -58,45 +59,29 @@ public class JUnitTestPendingRequests  implements ApplicationContextAware {
 	}
 
 	@Test
-	public void testGetPendingRequests() {
-		List<CalculationRequest> requests = pendingRequests.getRequests();
-		assertEquals(0 ,requests.size());
+	public void testGetCalculatedResults() {
+		List<CalculationResult> results = calculatedResults.getResults();
+		assertEquals(0 ,results.size());
 	}
 
 	@Test
-	public void testGetNumRequests() {
-		long numRequests = pendingRequests.getNumRequests();
-		assertEquals(0 ,numRequests);
+	public void testRemoveResult() {
+		calculatedResults.removeResult( new CalculationResult(new CalculationRequest( ShapeName.CIRCLE, CalcType.CALC_AREA, 0.0),0.0));
 	}
 
 	@Test
-	public void testRemoveRequest() {
-		pendingRequests.removeRequest(
-				new CalculationRequest(
-						ShapeName.CIRCLE,
-						CalcType.CALC_AREA,
-						0.0)
-				);
-	}
-
-	@Test
-	public void testputRequest() {
-		pendingRequests.putRequest(
-				new CalculationRequest(
-						ShapeName.CIRCLE,
-						CalcType.CALC_AREA,
-						0.0)
-				);
-		long numRequests = pendingRequests.getNumRequests();
-		assertEquals(1 ,numRequests);
+	public void testputResult() {
+		calculatedResults.putResult( new CalculationResult(new CalculationRequest( ShapeName.CIRCLE, CalcType.CALC_AREA, 0.0),0.0));
+		long numResults = calculatedResults.getResults().size();
+		assertEquals(1 ,numResults);
 	}
 
 	
 	@Test
-	public void testRequestsForExceptionsDuringPossibleRaceConditions() {
+	public void testResultsForExceptionsDuringPossibleRaceConditions() {
 
-		long numRequests = pendingRequests.getNumRequests();
-		assertEquals(0 ,numRequests);
+		long numResults = calculatedResults.getResults().size();
+		assertEquals(0 ,numResults);
 
 		// this class will run the Runnable tasks (see further down)
 		// in a coordinated (with main thread) fashion
@@ -134,40 +119,51 @@ public class JUnitTestPendingRequests  implements ApplicationContextAware {
 
 		int loopMax = 300;
 
-		Runnable deleteAllRequestsTask = () -> {
+		Runnable deleteAllResultsTask = () -> {
 			logger.debug("\n\ndelete\n\n");
 			for (int i=0; i<loopMax; i++) {
-				pendingRequests.deleteAllRequests();
+				calculatedResults.deleteAllResults();
 			}
 		};
 		
-		Runnable addRequestsTask = () -> {
+		Runnable addResultsTask = () -> {
 			for (int dimension=0; dimension<loopMax; dimension++) {
-				pendingRequests.putRequest(new CalculationRequest(ShapeName.CIRCLE, CalcType.CALC_AREA, (double)dimension));
+				calculatedResults.putResult(
+						new CalculationResult(
+								new CalculationRequest(ShapeName.CIRCLE, CalcType.CALC_AREA, (double)dimension),
+								(double)dimension)
+						);
 				logger.debug("\n\n"+dimension+"\n\n");
 			}
 		};
 
-		Runnable addRequestsTask2 = () -> {
+		Runnable addResultsTask2 = () -> {
 			for (int dimension=0; dimension<loopMax; dimension++) {
-				pendingRequests.putRequest(new CalculationRequest(ShapeName.SQUARE, CalcType.CALC_VOLUME, (double)dimension));
+				calculatedResults.putResult(
+						new CalculationResult(
+								new CalculationRequest(ShapeName.SQUARE, CalcType.CALC_VOLUME, (double)dimension),
+								(double)dimension)
+						);
 				logger.debug("\n\n"+dimension+"\n\n");
 			}
 		};
 
-		Runnable addRequestsTask3 = () -> {
+		Runnable addResultsTask3 = () -> {
 			for (int dimension=0; dimension<loopMax; dimension++) {
-				pendingRequests.putRequest(new CalculationRequest(ShapeName.SPHERE, CalcType.CALC_AREA, (double)dimension));
+				calculatedResults.putResult(
+						new CalculationResult(
+								new CalculationRequest(ShapeName.SPHERE, CalcType.CALC_AREA, (double)dimension),
+								(double)dimension)
+						);
 				logger.debug("\n\n"+dimension+"\n\n");
 			}
 		};
 
 
 		final List<LatchedThread> threads = new ArrayList<LatchedThread>();
-		//new LatchedThread(deleteAllRequestsTask,threads);
-		new LatchedThread(addRequestsTask,threads);
-		new LatchedThread(addRequestsTask2,threads);
-		new LatchedThread(addRequestsTask3,threads);
+		new LatchedThread(addResultsTask,threads);
+		new LatchedThread(addResultsTask2,threads);
+		new LatchedThread(addResultsTask3,threads);
 
 		CountDownLatch readyLatch = new CountDownLatch(threads.size());
 		CountDownLatch startLatch = new CountDownLatch(threads.size());
@@ -205,8 +201,8 @@ public class JUnitTestPendingRequests  implements ApplicationContextAware {
 		
 		logger.debug("\n\nMain thread testing some results.....\n\n");
 
-		long numRequestsAfter = pendingRequests.getNumRequests();
-		assertEquals(loopMax*3 ,numRequestsAfter);
+		long numResultsAfter = calculatedResults.getResults().size();
+		assertEquals(loopMax*3 ,numResultsAfter);
 
 	
 	}
