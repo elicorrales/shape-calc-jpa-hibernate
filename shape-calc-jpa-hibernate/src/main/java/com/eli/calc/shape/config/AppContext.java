@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 
@@ -18,6 +19,7 @@ import com.eli.calc.shape.service.impl.PendingRequestsImpl;
 @Configuration
 @ComponentScan(basePackages="com.eli.calc.shape")
 @PropertySource("classpath:application.properties")
+@Lazy
 public class AppContext {
 
     @Autowired
@@ -31,15 +33,4 @@ public class AppContext {
         );
     }
 
-/*
-    @Bean
-    PendingRequests pendingRequests() {
-    	return new PendingRequestsImpl();
-    }
-
-    @Bean
-    CalculatedResults calculatedResults() {
-    	return new CalculatedResultsImpl();
-    }
-*/
 }
