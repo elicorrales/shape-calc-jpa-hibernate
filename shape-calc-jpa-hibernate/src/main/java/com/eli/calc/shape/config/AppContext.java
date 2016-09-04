@@ -19,7 +19,6 @@ import com.eli.calc.shape.service.impl.PendingRequestsImpl;
 @Configuration
 @ComponentScan(basePackages="com.eli.calc.shape")
 @PropertySource("classpath:application.properties")
-@Lazy
 public class AppContext {
 
     @Autowired

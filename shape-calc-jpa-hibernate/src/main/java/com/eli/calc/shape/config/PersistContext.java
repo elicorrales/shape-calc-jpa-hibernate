@@ -24,7 +24,6 @@ import com.zaxxer.hikari.HikariDataSource;
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages={"com.eli.calc.shape.persistence.repository"})
-@Lazy
 public class PersistContext {
 
     @Autowired
