@@ -83,7 +83,7 @@ public class JUnitTest implements ApplicationContextAware {
 
 	@Test
 	public void testGetAllCalculationResults() {
-		calculator.getAllCalculationResults();
+		calculator.getAllCalculatedResults();
 	}
 
 	@Test
@@ -228,12 +228,12 @@ public class JUnitTest implements ApplicationContextAware {
 		assertNotNull(requests);
 		assertEquals(0,requests.size());
 		
-		List<CalculationResult> results = calculator.getAllCalculationResults();
+		List<CalculationResult> results = calculator.getAllCalculatedResults();
 		assertNotNull(results);
 		assertEquals(6,results.size());
 
 		calculator.deleteAllResults();
-		results = calculator.getAllCalculationResults();
+		results = calculator.getAllCalculatedResults();
 		assertNotNull(results);
 		assertEquals(0,results.size());
 	}
@@ -280,7 +280,7 @@ public class JUnitTest implements ApplicationContextAware {
 		assertNotNull(requests);
 		assertEquals(0,requests.size());
 		
-		List<CalculationResult> results = calculator.getAllCalculationResults();
+		List<CalculationResult> results = calculator.getAllCalculatedResults();
 		assertNotNull(results);
 		assertEquals(12,results.size());
 
@@ -319,7 +319,7 @@ public class JUnitTest implements ApplicationContextAware {
 
 
 		calculator.deleteAllResults();
-		results = calculator.getAllCalculationResults();
+		results = calculator.getAllCalculatedResults();
 		assertNotNull(results);
 		assertEquals(0,results.size());
 	}
@@ -443,7 +443,7 @@ public class JUnitTest implements ApplicationContextAware {
 		
 		logger.debug("\n\nMain thread testing some results.....\n\n");
 
-		List<CalculationResult> results = calculator.getAllCalculationResults();
+		List<CalculationResult> results = calculator.getAllCalculatedResults();
 		assertNotNull(results);
 		assertEquals((expectedNumResults1*3) ,results.size(),0.0);
 

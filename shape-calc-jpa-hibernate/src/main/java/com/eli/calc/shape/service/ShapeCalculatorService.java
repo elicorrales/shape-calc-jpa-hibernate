@@ -40,7 +40,7 @@ public interface ShapeCalculatorService {
 	/**
 	 * @return - the list of results
 	 */
-	List<CalculationResult> getAllCalculationResults();
+	List<CalculationResult> getAllCalculatedResults();
 	
 	/**
 	 * Runs the calculations of all pending requests

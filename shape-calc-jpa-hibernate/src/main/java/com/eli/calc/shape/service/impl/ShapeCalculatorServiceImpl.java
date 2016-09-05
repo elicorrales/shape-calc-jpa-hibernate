@@ -62,7 +62,7 @@ public class ShapeCalculatorServiceImpl implements ShapeCalculatorService {
 		return pendingRequests.getRequests();
 	}
 
-	public List<CalculationResult> getAllCalculationResults() {
+	public List<CalculationResult> getAllCalculatedResults() {
 		return calculatedResults.getResults();
 	}
 
