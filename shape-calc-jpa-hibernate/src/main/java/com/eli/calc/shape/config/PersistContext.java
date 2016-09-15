@@ -5,10 +5,16 @@ import java.util.Properties;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -22,9 +28,16 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 @Configuration
+@PropertySource("classpath:persist.properties")
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages={"com.eli.calc.shape.persistence.repository"})
 public class PersistContext {
+
+	private static final Logger logger = LoggerFactory.getLogger(PersistContext.class);
+	
+    public PersistContext() {
+    	logger.debug("\n\n\nConstructor\n\n\n");
+    }
 
     @Autowired
     private Environment env; // to have access to application.properties

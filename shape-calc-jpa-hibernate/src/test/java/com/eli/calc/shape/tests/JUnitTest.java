@@ -27,7 +27,7 @@ import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.eli.calc.shape.config.AppContext;
+import com.eli.calc.shape.config.ShapeCalcBaseContext;
 import com.eli.calc.shape.domain.CalculationRequest;
 import com.eli.calc.shape.domain.CalculationResult;
 import com.eli.calc.shape.model.CalcType;
@@ -35,7 +35,7 @@ import com.eli.calc.shape.model.ShapeName;
 import com.eli.calc.shape.service.ShapeCalculatorService;
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes={AppContext.class})
+@ContextConfiguration(classes={ShapeCalcBaseContext.class})
 public class JUnitTest implements ApplicationContextAware {
 
 	private static final Logger logger = LoggerFactory.getLogger(JUnitTest.class);
